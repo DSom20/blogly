@@ -6,12 +6,15 @@
 <h1>Edit a user</h1>
 <form method="POST">
   <label for="first_name">First Name</label>
-  <input id="first_name" type="text" name="first_name" required>JINJA
+  <input id="first_name" type="text" name="first_name" value={{ user.first_name }} required>
   <label for="last_name">Last Name</label>
-  <input id="last_name" type="text" name="last_name" required>JINJA
+  <input id="last_name" type="text" name="last_name" value={{ user.last_name }} required>
   <label for="image_url">Image Url</label>
-  <input id="image_url" type="url" name="image_url" placeholder="Provide an image of this user">JINJA
-  <button type="button"><a href="JINJA user details page">Cancel</a></button>
+  <input id="image_url" type="url" name="image_url" placeholder="Provide an image of this user" 
+    {% if user.image_url != "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png" %}
+      value={{ user.image_url }}
+    {% endif %}>
+  <button type="button"><a href=/users/{{user.id}}>Cancel</a></button>
   <button type="submit">Save</button>
 </form>
 
