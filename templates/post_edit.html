@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Blogly Edit Post{% endblock %}
+
+{% block content %}
+<h1>Edit Post</h1>
+<form method="POST">
+  <label for="title">Title</label>
+  <input id="title" type="text" name="title" value={{post.title}} required>
+  <label for="content">Content</label>
+  <textarea id="content" name="content" rows="5" cols="33" required>{{post.content}}</textarea>
+  <button >Save Changes</button>
+  <button formaction=/users/{{post.user.id}} formmethod="GET">Cancel</button>
+</form>
+
+{% endblock %}

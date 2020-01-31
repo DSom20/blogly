@@ -4,10 +4,20 @@
 
 {% block content %}
 <img src={{ user.image_url }} alt="Profile Pic" style="height:200px; width:200px">
-<h1>{{ user.first_name }} {{ user.last_name }}</h1>
+<h1>{{ user.full_name }}</h1>
 <button><a href=/users/{{user.id}}/edit>Edit</a></button>
 <form action=/users/{{user.id}}/delete method="POST">
   <button>Delete</button>
+</form>
+
+<h2>Posts</h2>
+<ul>
+  {% for post in user.posts %}
+    <li><a href=/posts/{{post.id}}>{{ post.title }}</a></li>
+  {% endfor %}
+</ul>
+<form action=/users/{{user.id}}/posts/new>
+  <button>Add Post</button>
 </form>
 
 

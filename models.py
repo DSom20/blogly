@@ -1,11 +1,10 @@
 """Models for Blogly."""
 
 from flask_sqlalchemy import SQLAlchemy
+import datetime
+from global_variables import DEFAULT_IMAGE_URL
 
 db = SQLAlchemy()
-
-DEFAULT_IMAGE_URL = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
-
 
 def connect_db(app):
     """ Connect to database. """
@@ -28,10 +27,26 @@ class User(db.Model):
                           nullable=False)
     image_url = db.Column(db.String,
                           nullable=True, default=DEFAULT_IMAGE_URL)
+    posts = db.relationship('Post', backref='user')
 
-    def update_user(self, first_name, last_name, image_url):
-        """ Update all 3 attributes of a user """
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
-        self.first_name = first_name
-        self.last_name = last_name
-        self.image_url = DEFAULT_IMAGE_URL if image_url is None else image_url
+    def __repr__(self):
+        return f"<Name: {self.full_name}, # of Posts: {len(self.posts)}>"
+
+class Post(db.Model):
+    """ Posts. """
+
+    __tablename__ = "posts"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(50), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=True, default=datetime.datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return f"<Title: {self.title}, User ID: {self.user.id}>"
+

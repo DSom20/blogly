@@ -1,6 +1,7 @@
 from app import app
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 from unittest import TestCase
+from global_variables import DEFAULT_IMAGE_URL
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_test'
 
@@ -20,7 +21,9 @@ class FlaskTesting(TestCase):
         self.client = app.test_client()
         db.create_all()
         user1 = User(first_name='David', last_name='Sommers')
+        post1 = Post(title='Test Post', content='Content for tester post :)', user_id=1)
         db.session.add(user1)
+        db.session.add(post1)
         db.session.commit()
 
     def tearDown(self):
@@ -56,7 +59,7 @@ class FlaskTesting(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h1>David Sommers</h1>', html)
-            self.assertIn('<img src=https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
+            self.assertIn(f'<img src={DEFAULT_IMAGE_URL}',
                           html)
 
     def test_users_edit(self):
@@ -72,7 +75,7 @@ class FlaskTesting(TestCase):
                           html)
             self.assertIn('<input id="last_name" type="text" name="last_name" value=Sommers',
                           html)
-            self.assertNotIn('value=https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
+            self.assertNotIn(f'value={DEFAULT_IMAGE_URL}',
                              html)
 
         # Post Request
@@ -101,6 +104,7 @@ class FlaskTesting(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('<h1>Create a user</h1>', html)
 
+    def test_users_post(self):
         # Post request
         with self.client as client:
             resp = client.post('users/new', data=dict(first_name='Bob',
@@ -128,3 +132,48 @@ class FlaskTesting(TestCase):
             self.assertIn('<h1>Users</h1>', html)
 
             self.assertNotIn('David', html)
+
+    
+    def test_posts_new(self):
+        # Get request
+        with self.client as client:
+            resp = client.get('/users/1/posts/new')
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1>Add Post for David Sommers</h1>', html)
+    
+    def test_posts(self):
+        # Post request
+        with self.client as client:
+            resp = client.post('/users/1/posts/new', data=dict(title='Another Test Post',
+                               content="Content for another test post."),
+                               follow_redirects=True)
+            html = resp.get_data(as_text=True)
+            post_2 = Post.query.get(2)
+
+            self.assertEqual(Post.query.count(), 2)
+            self.assertEqual(post_2.user.full_name, 'David Sommers')
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1>David Sommers</h1>', html)
+
+            self.assertIn('<li><a href=/posts/2>Another Test Post</a></li>', html)
+
+    def test_bad_id(self):
+        with self.client as client:
+            resp = client.post('/user/123123/posts/new')
+
+            self.assertEqual(resp.status_code, 404)
+
+    def test_users_delete(self):
+        with self.client as client:
+            resp = client.post('/posts/1/delete', follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(Post.query.count(), 0)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1>David Sommers</h1>', html)
+
+            self.assertNotIn('Test', html)

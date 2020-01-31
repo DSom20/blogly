@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Blogly Create Post{% endblock %}
+
+{% block content %}
+<h1>Add Post for {{ user.full_name }}</h1>
+<form method="POST">
+  <label for="title">Title</label>
+  <input id="title" type="text" name="title" required>
+  <label for="content">Content</label>
+  <textarea id="content" name="content" rows="5" cols="33" required></textarea>
+  <button>Add</button>
+  <button formaction=/users/{{user.id}} formmethod="GET">Cancel</button>
+</form>
+
+{% endblock %}
