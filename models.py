@@ -50,3 +50,20 @@ class Post(db.Model):
     def __repr__(self):
         return f"<Title: {self.title}, User ID: {self.user.id}>"
 
+class Tag(db.Model):
+    """ Tags. """
+
+    __tablename__ = "tags"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(20), unique=True, nullable=False)
+
+    posts = db.relationship('Post', secondary='post_tag', backref="tags")
+
+class PostTag(db.Model):
+    """ Post and Tags Join Table. """
+
+    __tablename__ = "post_tag"
+
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)

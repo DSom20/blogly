@@ -9,6 +9,9 @@
   <input id="title" type="text" name="title" required>
   <label for="content">Content</label>
   <textarea id="content" name="content" rows="5" cols="33" required></textarea>
+  {% for tag in tags %}
+  <label><input type="checkbox" name="{{tag.name}}">{{tag.name}}</label>
+  {% endfor %}
   <button>Add</button>
   <button formaction=/users/{{user.id}} formmethod="GET">Cancel</button>
 </form>

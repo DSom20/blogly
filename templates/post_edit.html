@@ -9,6 +9,13 @@
   <input id="title" type="text" name="title" value={{post.title}} required>
   <label for="content">Content</label>
   <textarea id="content" name="content" rows="5" cols="33" required>{{post.content}}</textarea>
+  {% for tag in tags %}
+  {% if tag in post.tags %}
+  <label><input type="checkbox" name="{{tag.name}}" checked>{{tag.name}}</label>
+  {% else %}
+  <label><input type="checkbox" name="{{tag.name}}">{{tag.name}}</label>
+  {% endif %}
+  {% endfor %}
   <button >Save Changes</button>
   <button formaction=/users/{{post.user.id}} formmethod="GET">Cancel</button>
 </form>
